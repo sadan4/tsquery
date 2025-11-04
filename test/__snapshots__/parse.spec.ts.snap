@@ -2,43 +2,56 @@
 
 exports[`tsquery: > tsquery.parse - rewrites selectors > properly rewrites \`!C[prop] > D[otherProp] > E ~ F\` 1`] = `
 {
+  "parent": undefined,
   "selectors": [
     {
+      "parent": [Circular],
       "type": "identifier",
       "value": "Identifier",
     },
     {
       "name": "prop",
+      "parent": [Circular],
       "type": "attribute",
     },
     {
+      "parent": [Circular],
       "selectors": [
         {
           "left": {
+            "parent": [Circular],
             "type": "exactNode",
           },
+          "parent": [Circular],
           "right": {
             "left": {
               "left": {
+                "parent": [Circular],
                 "selectors": [
                   {
+                    "parent": [Circular],
                     "type": "identifier",
                     "value": "Identifier",
                   },
                   {
                     "name": "otherProp",
+                    "parent": [Circular],
                     "type": "attribute",
                   },
                 ],
                 "type": "compound",
               },
+              "parent": [Circular],
               "right": {
+                "parent": [Circular],
                 "type": "identifier",
                 "value": "Identifier",
               },
               "type": "child",
             },
+            "parent": [Circular],
             "right": {
+              "parent": [Circular],
               "type": "identifier",
               "value": "Identifier",
             },
@@ -56,39 +69,50 @@ exports[`tsquery: > tsquery.parse - rewrites selectors > properly rewrites \`!C[
 
 exports[`tsquery: > tsquery.parse - rewrites selectors > properly rewrites \`!C[prop] D[otherProp] > E ~ F\` 1`] = `
 {
+  "parent": undefined,
   "selectors": [
     {
+      "parent": [Circular],
       "type": "identifier",
       "value": "Identifier",
     },
     {
       "name": "prop",
+      "parent": [Circular],
       "type": "attribute",
     },
     {
+      "parent": [Circular],
       "selectors": [
         {
           "left": {
             "left": {
+              "parent": [Circular],
               "selectors": [
                 {
+                  "parent": [Circular],
                   "type": "identifier",
                   "value": "Identifier",
                 },
                 {
                   "name": "otherProp",
+                  "parent": [Circular],
                   "type": "attribute",
                 },
               ],
               "type": "compound",
             },
+            "parent": [Circular],
             "right": {
+              "parent": [Circular],
               "type": "identifier",
               "value": "Identifier",
             },
             "type": "child",
           },
+          "parent": [Circular],
           "right": {
+            "parent": [Circular],
             "type": "identifier",
             "value": "Identifier",
           },

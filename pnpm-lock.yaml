@@ -4,13 +4,18 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@types/esquery':
+    hash: 175347a930279e309770e6d61227f53f74382e3a9cc813af89da42eda113934e
+    path: patches/@types__esquery.patch
+
 importers:
 
   .:
     dependencies:
       '@types/esquery':
         specifier: ^1.5.4
-        version: 1.5.4
+        version: 1.5.4(patch_hash=175347a930279e309770e6d61227f53f74382e3a9cc813af89da42eda113934e)
       esquery:
         specifier: ^1.6.0
         version: 1.6.0
@@ -1875,7 +1880,7 @@ snapshots:
 
   '@types/deep-eql@4.0.2': {}
 
-  '@types/esquery@1.5.4':
+  '@types/esquery@1.5.4(patch_hash=175347a930279e309770e6d61227f53f74382e3a9cc813af89da42eda113934e)':
     dependencies:
       '@types/estree': 1.0.8
 

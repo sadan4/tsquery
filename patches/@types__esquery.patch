@@ -1,0 +1,49 @@
+diff --git a/index.d.ts b/index.d.ts
+index 849adf463a84feee34f3a57f33d9833204fac332..3846ac49d115dde30e9eb28001ef773123ac96f3 100644
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -16,7 +16,7 @@ declare namespace query {
+     }
+ 
+     /** Parse a selector and return its AST. */
+-    function parse(selector: string): Selector;
++    function parse(selector: string): Selector | undefined;
+     /** From a JS AST and a selector AST, collect all JS AST nodes that match the selector. */
+     function match(ast: Node, selector: Selector, options?: ESQueryOptions): Node[];
+     /** Given a `node` and its ancestors, determine if `node` is matched by `selector`. */
+@@ -51,6 +51,7 @@ declare namespace query {
+         | Negation
+         | Matches
+         | Has
++        | HasStartingBinaryOp
+         | Class;
+     type MultiSelector = Sequence | Negation | Matches | Has;
+     type BinarySelector = Descendant | Child | Sibling | Adjacent;
+@@ -63,6 +64,7 @@ declare namespace query {
+     //
+     interface Atom {
+         type: string;
++        parent?: MultiSelector | BinarySelector | undefined;
+     }
+     interface SubjectSelectorAtom extends Atom {
+         subject?: boolean | undefined;
+@@ -72,7 +74,7 @@ declare namespace query {
+     }
+     interface BinarySelectorAtom extends SubjectSelectorAtom {
+         type: "child" | "sibling" | "adjacent" | "descendant";
+-        left: SubjectSelector;
++        left: SubjectSelector | HasStartingBinaryOp;
+         right: SubjectSelector;
+     }
+     interface MultiSelectorAtom extends SubjectSelectorAtom {
+@@ -152,6 +154,10 @@ declare namespace query {
+     interface Has extends MultiSelectorAtom {
+         type: "has";
+     }
++    interface HasStartingBinaryOp extends SubjectSelectorAtom {
++        type: "exactNode";
++        subject?: undefined;
++    }
+     interface Class extends Atom {
+         type: "class";
+         name: "declaration" | "expression" | "function" | "pattern" | "statement";

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable no-unused-labels */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -11,20 +12,22 @@ import type {
 import * as esquery from 'esquery';
 import { SyntaxKind } from 'typescript';
 
-const IDENTIFIER_QUERY = 'identifier';
-
 /**
  * @public
  * Parse a `string` into an ESQuery `Selector`.
  *
- * @param selector - a TSQuery `Selector` (using the [ESQuery selector syntax](https://github.com/estools/esquery)).
+ * @param selectorString - a TSQuery `Selector` (using the [ESQuery selector syntax](https://github.com/estools/esquery)).
  * @returns a validated `Selector` or `null` if the input `string` is invalid.
  * @throws if the `Selector` is syntactically valid, but contains an invalid TypeScript Node kind.
  */
-export function parse(selector: string): Selector | null {
-  const cleanSelector = esquery.parse(stripComments(stripNewLines(selector)));
-  transform(cleanSelector);
-  return validate(cleanSelector);
+export function parse(selectorString: string): Selector | null {
+  const selector = esquery.parse(stripComments(stripNewLines(selectorString)));
+
+  if (!selector) {
+    return null;
+  }
+  transform(selector);
+  return validate(selector);
 }
 
 /**
@@ -58,30 +61,25 @@ function stripNewLines(input: string): string {
   return input.replace(/\n/g, '');
 }
 
-function validate(selector: Selector): Selector | null {
+function validate(selector: Selector, parent: Selector["parent"]): Selector | null {
   if (!selector) {
     return null;
   }
 
-  if ("parent" in selector) {
-    delete (selector as any).parent;
+  selector.parent = parent;
+
+  if ("selectors" in selector) {
+    selector.selectors.map(child => validate(child, selector));
+  }
+  if ("left" in selector) {
+    const { left, right } = selector;
+    validate(left, selector);
+    validate(right, selector);
   }
 
-  const { selectors } = selector as MultiSelector;
-  if (selectors) {
-    selectors.map(validate);
-  }
-  const { left, right } = selector as BinarySelector;
-  if (left) {
-    validate(left);
-  }
-  if (right) {
-    validate(right);
-  }
-
-  if ((selector.type as string) === IDENTIFIER_QUERY) {
-    const { value } = selector as Identifier;
-    if (SyntaxKind[value as keyof typeof SyntaxKind] == null) {
+  if (selector.type === "identifier") {
+    const { value } = selector;
+    if (!(value in SyntaxKind && !Number.isNaN(+SyntaxKind[value as keyof typeof SyntaxKind]))) {
       throw new SyntaxError(`"${value}" is not a valid TypeScript Node kind.`);
     }
   }
@@ -89,33 +87,42 @@ function validate(selector: Selector): Selector | null {
   return selector;
 }
 
-type MultiWithParent = MultiSelector & { selectors: SelectorWithParent<esquery.SubjectSelector>[]; }
-type BinaryWithParent = BinarySelector & { left: SelectorWithParent<esquery.SubjectSelector>; right: SelectorWithParent<esquery.SubjectSelector>; }
-
-type SelectorWithParent<T extends Selector = Selector> = T & { parent?: SelectorWithParent<MultiWithParent | BinaryWithParent>; };
-
 export function transform(selector: Selector) {
-  const stack: Selector[] = [];
+  addParent(selector, undefined);
   let reRun = false;
 
   do {
-    stack.length = 0;
     reRun = false;
     visit(selector);
   } while (reRun);
 
-  type TAfter = (cb: () => void) => void;
-  
-  function visitMulti(node: SelectorWithParent<MultiSelector>, after: TAfter) {
+  function visit(node: Selector | undefined) {
+    if (!node || reRun) {
+      return;
+    }
+    if ("selectors" in node) {
+      visitMulti(node);
+    }
+    if (reRun) {
+      return;
+    }
+    if ("left" in node && "right" in node) {
+      visitBinarySelector(node);
+    }
+    if (reRun) {
+      return;
+    }
+  }
+  function visitMulti(node: MultiSelector) {
     node.selectors.forEach(visit);
   }
-  function visitBinarySelector(node: SelectorWithParent<BinaryWithParent>, after: TAfter) {
+  function visitBinarySelector(node: BinarySelector) {
     visitBinary: {
       node.left.parent = node.right.parent = node;
       visitLeft: {
         if (node.left.subject) {
           const { left } = node;
-          const newRoot: SelectorWithParent<MultiWithParent> = {
+          const newRoot: MultiSelector = {
             type: 'compound',
             selectors: []
           };
@@ -124,49 +131,41 @@ export function transform(selector: Selector) {
           } else {
             newRoot.selectors.push(left);
           }
-          let cur: SelectorWithParent | undefined = node;
-          let following: SelectorWithParent<esquery.SubjectSelector | BinarySelector> = cur.right;
-          cur = node.parent;
-          while (cur && "left" in cur && "right" in cur) {
+          let cur: Selector["parent"] = node;
+          let following: esquery.SubjectSelector = cur.right;
+          while ((cur = cur.parent) && "left" in cur) {
             const { right, type } = cur;
             following = {
-              type,
               left: following,
-              right
-            } satisfies BinarySelector;
-            // @ts-expect-error guh
+              right,
+              type,
+            } satisfies BinarySelector as BinarySelector;
             following.left.parent = following.right.parent = following;
             // always leave cur defined so it can be used after the loop
             if (!cur.parent) {
               break;
             }
-            cur = cur.parent;
           }
-          if (node.type != "descendant") {
+          if (node.type !== "descendant") {
             following = {
               type: node.type,
               left: {
                 type: "exactNode",
-              } as never as esquery.SubjectSelector,
+              },
               right: following
-            } satisfies BinarySelector;
-            // @ts-expect-error guh
+            } satisfies BinarySelector as BinarySelector;
             following.left.parent = following.right.parent = following;
           }
-          const has = {
+          const has: esquery.Has = {
             type: "has",
             selectors: [following]
-          } satisfies SelectorWithParent<esquery.Has>;
+          };
           has.selectors[0].parent = has;
           newRoot.selectors.push(has);
-          newRoot.selectors.forEach(s => (s as any).parent = newRoot);
+          newRoot.selectors.forEach(s => s.parent = newRoot);
           // overwrite the root with itself
           const root = cur ?? node;
-          newRoot.parent = root.parent;
-          Object.keys(root).forEach(key => {
-            delete (root as never)[key];
-          });
-          Object.assign(root, newRoot);
+          replaceNode(root, newRoot);
           reRun = true;
           return;
         } else {
@@ -178,32 +177,24 @@ export function transform(selector: Selector) {
       }
     }
   }
-  function visit(node: Selector | undefined) {
-    if (!node || reRun) {
-      return;
-    }
-    const top = stack.at(-1);
-    if (top) {
-      (node as SelectorWithParent).parent = top as MultiSelector | BinarySelector;
-    }
-    stack.push(node);
-    const cbs: (() => void)[] = [];
-    if ("selectors" in node) {
-      visitMulti(node, after);
-    }
-    if (reRun) {
-      return;
-    }
-    if ("left" in node && "right" in node) {
-      visitBinarySelector(node, after);
-    }
-    if (reRun) {
-      return;
-    }
-    stack.pop();
-    cbs.forEach((cb) => cb());
-    function after(cb: () => void) {
-      cbs.push(cb);
-    }
+  function replaceNode(oldNode: Selector, newNode: Selector) {
+    const { parent } = oldNode;
+    Object.keys(oldNode).forEach(key => {
+      delete oldNode[key as keyof Selector];
+    })
+    Object.assign(oldNode, newNode, { parent });
+  }
+}
+
+function addParent(selector: Selector, parent: Selector["parent"]): void {
+  if (parent) {
+    selector.parent = parent;
+  }
+  if ("left" in selector && "right" in selector) {
+    addParent(selector.left, selector);
+    addParent(selector.right, selector);
+  }
+  if ("selectors" in selector) {
+    selector.selectors.forEach(child => addParent(child, selector))
   }
 }
