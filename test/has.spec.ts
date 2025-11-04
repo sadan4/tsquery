@@ -1,7 +1,7 @@
 import type { BinaryExpression, Block, IfStatement } from 'typescript';
 import { describe, expect, it } from "vitest";
 
-import { conditional } from './fixtures';
+import { conditional, simpleProgram } from './fixtures';
 
 import { tsquery } from '../src/index';
 
@@ -64,6 +64,22 @@ describe('tsquery:', () => {
         'SourceFile:has(> IfStatement)'
       );
       expect(result).toEqual([ast]);
+    });
+    it('should handle immediate child selectors within :has and :not', () => {
+      const ast = tsquery.ast(simpleProgram);
+      const result = tsquery(
+        ast,
+        'SourceFile:not(:has(> *))'
+      );
+      expect(result).toEqual([]);
+    });
+    it('should handle has with no parent', () => {
+      const ast = tsquery.ast(conditional);
+      const result = tsquery(
+        ast,
+        '*:has(> Identifier[name="x"])'
+      );
+      expect(result).toEqual([]);
     });
   });
 });

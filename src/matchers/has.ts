@@ -34,10 +34,14 @@ export function exactNode(
   }
   let cur: Selector | undefined = parent.parent;
   let prev: Selector = parent;
-  let found: TFound | undefined = nodeCache.get(selector);
+  let found: TFound | undefined = nodeCache.get(selector) ?? {
+    type: 'wildcard',
+    value: '*',
+  };
   while (!found) {
     if (!(prev = cur, cur = cur.parent)) {
-      throw new Error("could not find has selector base");
+      // we reached the top and found nothing so it must be `:has()`; use a wildcard
+      break;
     }
     if (cur.type === "has") {
       throw new Error(":has cannot be a decendant of another :has")
@@ -46,10 +50,7 @@ export function exactNode(
       continue;
       // any binary expr
     } else if ("left" in cur || cur.type === "matches") {
-      found = {
-        type: "wildcard",
-        value: "*",
-      } satisfies Wildcard;
+      break;
     } else if (cur.type === "compound") {
       if (cur.selectors.length === 0) {
         // if it is empty, we should prob just use a wildcare
@@ -69,10 +70,9 @@ export function exactNode(
 
   switch (parent.type) {
     case 'child': {
-      console.log({node, parent, selector, ancestors});
       const matcher  = MATCHERS[found.type];
       // typescript cant express that matcher and found are linked without extra boilerplate
-      return matcher(ancestors[0], found as UnionToIntersection<TFound>, ancestors.slice(1));
+      return matcher(node, found as UnionToIntersection<TFound>, ancestors);
     }
     case 'sibling':
     case 'adjacent': {
