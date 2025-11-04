@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import type { Node } from 'typescript';
 
 import { SyntaxKind } from 'typescript';

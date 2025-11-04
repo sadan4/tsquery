@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import type { FunctionDeclaration } from 'typescript';
 
 import { siblings, simpleProgram } from './fixtures';

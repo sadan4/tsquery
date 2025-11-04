@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { factory } from 'typescript';
 
 import { ast, map } from '../src/index';

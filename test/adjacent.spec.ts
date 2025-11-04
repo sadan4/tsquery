@@ -1,4 +1,5 @@
 import { simpleProgram } from './fixtures';
+import { describe, expect, it } from "vitest";
 
 import { tsquery } from '../src/index';
 

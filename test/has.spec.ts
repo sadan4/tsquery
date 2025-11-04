@@ -1,4 +1,5 @@
 import type { BinaryExpression, Block, IfStatement } from 'typescript';
+import { describe, expect, it } from "vitest";
 
 import { conditional } from './fixtures';
 
@@ -55,6 +56,14 @@ describe('tsquery:', () => {
       );
 
       expect(result).toEqual([ast]);
+    });
+    it('should handle immediate child selectors within :has', () => {
+      const ast = tsquery.ast(conditional);
+      const result = tsquery(
+        ast,
+        'SourceFile:has(> IfStatement)'
+      );
+      expect(result).toEqual([]);
     });
   });
 });

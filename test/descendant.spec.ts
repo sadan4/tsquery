@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import type { IfStatement } from 'typescript';
 import { conditional } from './fixtures';
 

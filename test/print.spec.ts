@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { SyntaxKind, factory } from 'typescript';
 
 import { simpleFunction } from './fixtures/simple-function';

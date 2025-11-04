@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { ScriptKind } from 'typescript';
 
 import { simpleJsxCode } from './fixtures';

@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { tsquery, files } from '../src/index';
 
 describe('tsquery:', () => {
@@ -5,13 +6,13 @@ describe('tsquery:', () => {
     it('should process a tsconfig.json file', () => {
       const files = tsquery.project('./tsconfig.json');
 
-      expect(files.length).toEqual(227);
+      expect(files.length).toEqual(314);
     });
 
     it('should find a tsconfig.json file in a directory', () => {
       const files = tsquery.project('./');
 
-      expect(files.length).toEqual(227);
+      expect(files.length).toEqual(314);
     });
 
     it(`should handle when a path doesn't exist`, () => {
@@ -25,7 +26,7 @@ describe('tsquery:', () => {
     it('should get the file paths from a tsconfig.json file', () => {
       const filePaths = tsquery.projectFiles('./tsconfig.json');
 
-      expect(filePaths.length).toEqual(62);
+      expect(filePaths.length).toEqual(63);
     });
 
     it(`should handle when a path doesn't exist`, () => {

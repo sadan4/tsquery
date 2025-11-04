@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { conditional, simpleFunction } from './fixtures';
 
 import { ast, query, tsquery } from '../src/index';

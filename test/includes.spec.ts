@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { simpleFunction } from './fixtures';
 
 import { ast, includes, query } from '../src/index';

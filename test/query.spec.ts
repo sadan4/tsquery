@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import type { Selector } from '../src/index';
 import type { Block, FunctionDeclaration } from 'typescript';
 

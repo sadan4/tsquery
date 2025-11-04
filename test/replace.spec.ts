@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { tsquery } from '../src/index';
 
 describe('tsquery:', () => {

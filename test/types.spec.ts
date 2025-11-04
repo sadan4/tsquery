@@ -6,6 +6,7 @@ import type {
 
 import { tsquery } from '../src/index';
 import { getProperties } from '../src/traverse';
+import { describe, expect, it } from "vitest";
 
 describe('tsquery:', () => {
   describe('tsquery - types:', () => {

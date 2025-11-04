@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { MultiSelector, tsquery, parse } from '../src/index';
 
 describe('tsquery:', () => {
