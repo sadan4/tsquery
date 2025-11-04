@@ -2,11 +2,11 @@ import type { Matches, Sequence, Selector } from 'esquery';
 import type { Node } from 'typescript';
 
 import { attribute } from './attribute';
-import { child, exactNode } from './child';
+import { child } from './child';
 import { classMatcher } from './class';
 import { descendant } from './descendant';
 import { field } from './field';
-import { has } from './has';
+import { exactNode, has } from './has';
 import { identifier } from './identifier';
 import { matches } from './matches';
 import { not } from './not';
@@ -22,7 +22,7 @@ export type Matcher<Selector> = (
 ) => boolean;
 
 type Matchers = {
-  [Key in Selector['type'] | "exactNode"]: Matcher<Selector & { type: Key }>;
+  [Key in Selector['type']]: Matcher<Extract<Selector, { type: Key }>>;
 };
 
 export const MATCHERS: Matchers = {

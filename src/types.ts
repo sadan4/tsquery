@@ -21,3 +21,6 @@ export type Properties = {
   // We parse the `text` to a `value` for all Literals:
   value?: unknown;
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type UnionToIntersection<U> = (U extends any ? (a: U) => any : never) extends (a: infer I)  => any ? I : never;

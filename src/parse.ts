@@ -27,7 +27,7 @@ export function parse(selectorString: string): Selector | null {
     return null;
   }
   transform(selector);
-  return validate(selector);
+  return validate(selector, undefined);
 }
 
 /**

@@ -63,7 +63,7 @@ describe('tsquery:', () => {
         ast,
         'SourceFile:has(> IfStatement)'
       );
-      expect(result).toEqual([1, 1]);
+      expect(result).toEqual([ast]);
     });
   });
 });

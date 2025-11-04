@@ -13,11 +13,3 @@ export function child(
   }
   return false;
 }
-
-export function exactNode(
-  node: Node,
-  selector: { type: 'exactNode' },
-  ancestors: Array<Node>
-): boolean {
-  return ancestors.length > 0 && ancestors[0].getChildren().includes(node);
-}
