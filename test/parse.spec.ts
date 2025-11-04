@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MultiSelector, tsquery, parse } from '../src/index';
+import { transform } from "../src/parse";
+import esquery from "esquery";
 
 describe('tsquery:', () => {
   describe('tsquery.parse - null query:', () => {
@@ -107,4 +109,19 @@ JsxText:not([text=/^\\s+$/])
       });
     });
   });
+  
+  describe("tsquery.parse - rewrites selectors", () => {
+    it("properly rewrites `!C[prop] D[otherProp] > E ~ F`", () => {
+      const selector = parse("!Identifier[prop] Identifier[otherProp] > Identifier ~ Identifier");
+      const byHand = esquery.parse("Identifier[prop]:has(Identifier[otherProp] > Identifier ~ Identifier)");
+      expect(selector).toEqual(byHand);
+      expect(selector).toMatchSnapshot();
+    });
+    it("properly rewrites `!C[prop] > D[otherProp] > E ~ F`", () => {
+      const selector = parse("!Identifier[prop] > Identifier[otherProp] > Identifier ~ Identifier");
+      const byHand = esquery.parse("Identifier[prop]:has(> Identifier[otherProp] > Identifier ~ Identifier)");
+      expect(selector).toEqual(byHand);
+      expect(selector).toMatchSnapshot();
+    });
+  })
 });

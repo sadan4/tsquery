@@ -69,6 +69,9 @@ function findSibling(
   }
 
   const keys = getVisitorKeys(node.parent || null);
+  const children = node.parent.getChildren();
+  const idx = children.indexOf(node);
+  
   return keys.some((key) => {
     const prop = node.parent[key as keyof typeof node.parent];
     if (Array.isArray(prop)) {
@@ -79,10 +82,10 @@ function findSibling(
       return test(prop, index);
     }
     return false;
-  });
+  }) || (idx !== -1 && test(children, idx));
 }
 
-const FILTERED_KEYS: Array<string> = ['parent'];
+const FILTERED_KEYS: Array<string> = ['parent', '_children'];
 
 export function getVisitorKeys(node: Node | null): Array<string> {
   return node

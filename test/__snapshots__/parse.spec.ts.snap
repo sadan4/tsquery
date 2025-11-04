@@ -1,0 +1,103 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`tsquery: > tsquery.parse - rewrites selectors > properly rewrites \`!C[prop] > D[otherProp] > E ~ F\` 1`] = `
+{
+  "selectors": [
+    {
+      "type": "identifier",
+      "value": "Identifier",
+    },
+    {
+      "name": "prop",
+      "type": "attribute",
+    },
+    {
+      "selectors": [
+        {
+          "left": {
+            "type": "exactNode",
+          },
+          "right": {
+            "left": {
+              "left": {
+                "selectors": [
+                  {
+                    "type": "identifier",
+                    "value": "Identifier",
+                  },
+                  {
+                    "name": "otherProp",
+                    "type": "attribute",
+                  },
+                ],
+                "type": "compound",
+              },
+              "right": {
+                "type": "identifier",
+                "value": "Identifier",
+              },
+              "type": "child",
+            },
+            "right": {
+              "type": "identifier",
+              "value": "Identifier",
+            },
+            "type": "sibling",
+          },
+          "type": "child",
+        },
+      ],
+      "type": "has",
+    },
+  ],
+  "type": "compound",
+}
+`;
+
+exports[`tsquery: > tsquery.parse - rewrites selectors > properly rewrites \`!C[prop] D[otherProp] > E ~ F\` 1`] = `
+{
+  "selectors": [
+    {
+      "type": "identifier",
+      "value": "Identifier",
+    },
+    {
+      "name": "prop",
+      "type": "attribute",
+    },
+    {
+      "selectors": [
+        {
+          "left": {
+            "left": {
+              "selectors": [
+                {
+                  "type": "identifier",
+                  "value": "Identifier",
+                },
+                {
+                  "name": "otherProp",
+                  "type": "attribute",
+                },
+              ],
+              "type": "compound",
+            },
+            "right": {
+              "type": "identifier",
+              "value": "Identifier",
+            },
+            "type": "child",
+          },
+          "right": {
+            "type": "identifier",
+            "value": "Identifier",
+          },
+          "type": "sibling",
+        },
+      ],
+      "type": "has",
+    },
+  ],
+  "type": "compound",
+}
+`;

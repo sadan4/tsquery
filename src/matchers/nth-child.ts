@@ -40,17 +40,18 @@ function findNthChild(
   node: Node,
   getIndex: (length: number) => number
 ): boolean {
-  if (!node.parent) {
+  const { parent } = node;
+  if (!parent) {
     return false;
   }
 
-  const keys = getVisitorKeys(node.parent || null);
+  const keys = getVisitorKeys(parent || null);
   return keys.some((key) => {
-    const prop = node.parent[key as keyof Node];
+    const prop = parent[key as keyof Node];
     if (Array.isArray(prop)) {
       const index = prop.indexOf(node);
       return index >= 0 && index === getIndex(prop.length);
     }
     return false;
-  });
+  }) || parent.getChildAt(getIndex(parent.getChildCount())) === node;
 }

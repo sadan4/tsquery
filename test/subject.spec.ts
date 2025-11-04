@@ -8,13 +8,9 @@ describe("tsquery:", () => {
         it("should handle type subjects", () => {
             const ast = tsquery.ast(conditional);
 
-            const result = tsquery(ast, "!IfStatement Identifier");
+            const result = tsquery(ast, "!Block > ExpressionStatement > BinaryExpression");
 
-            expect(result).toEqual([
-                ast.statements[0],
-                ast.statements[1],
-                (ast.statements[1] as IfStatement).elseStatement
-            ]);
+            expect(result).toEqual([ast.statements[0]]);
         });
     });
 });
