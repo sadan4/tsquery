@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Has, HasStartingBinaryOp, Selector, Sequence, Wildcard } from 'esquery';
 import type { Node } from 'typescript';
 
@@ -7,13 +9,32 @@ import { UnionToIntersection } from '../types';
 
 export function has(node: Node, selector: Has): boolean {
   const collector: Array<Node> = [];
-  selector.selectors.forEach((childSelector) => {
+  // workaround v8 crash while debugging a for each loop
+  for (let i = 0; i < selector.selectors.length; i++) {
+    const childSelector = selector.selectors[i];
+    if ("left" in childSelector && childSelector.left.type === "exactNode") {
+      switch (childSelector.type) {
+        case "descendant":
+          throw new Error("a decendant cannot have an exact node as left");
+        case "adjacent":
+        case "sibling":
+          throw new Error("not implemented yet");
+        case "child": {
+          for (const childNode of node.getChildren()) {
+            if (findMatches(childNode, childSelector, [node])) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
     traverse(node, (childNode: Node, ancestors: Array<Node>) => {
       if (findMatches(childNode, childSelector, ancestors)) {
         collector.push(childNode);
       }
     });
-  });
+  }
   return collector.length > 0;
 }
 
@@ -23,7 +44,7 @@ const nodeCache = new WeakMap<HasStartingBinaryOp, TFound>();
 export function exactNode(
   node: Node,
   selector: HasStartingBinaryOp,
-  ancestors: Array<Node>
+  ancestors: Array<Node>,
 ): boolean {
   const { parent } = selector;
   if (!parent) {
@@ -72,7 +93,7 @@ export function exactNode(
     case 'child': {
       const matcher  = MATCHERS[found.type];
       // typescript cant express that matcher and found are linked without extra boilerplate
-      return matcher(node, found as UnionToIntersection<TFound>, ancestors);
+      return matcher(node, found as any, ancestors) && node.getChildren().some(child => MATCHERS[parent.right.type](child, parent.right as any, [node, ...ancestors]));
     }
     case 'sibling':
     case 'adjacent': {
