@@ -2,7 +2,7 @@ import type { Node, Selector } from './index';
 import type { Matcher } from './matchers';
 import type { Properties } from './types';
 
-import { SyntaxKind } from 'typescript';
+import { isIdentifier, SyntaxKind } from 'typescript';
 import { syntaxKindName } from './syntax-kind';
 import { MATCHERS } from './matchers';
 
@@ -71,7 +71,7 @@ export function getProperties(node: Node): Properties {
       kindName: syntaxKindName(node.kind),
       text: hasKey(node, 'text') ? node.text : getTextIfNotSynthesized(node)
     };
-    if (node.kind === SyntaxKind.Identifier) {
+    if (isIdentifier(node)) {
       properties.name = hasKey(node, 'name') ? node.name : properties.text;
     }
     if (LITERAL_KINDS.includes(node.kind)) {

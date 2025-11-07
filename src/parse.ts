@@ -61,11 +61,7 @@ function stripNewLines(input: string): string {
   return input.replace(/\n/g, '');
 }
 
-function validate(selector: Selector, parent: Selector["parent"]): Selector | null {
-  if (!selector) {
-    return null;
-  }
-
+function validate(selector: Selector, parent: Selector["parent"]): Selector {
   selector.parent = parent;
 
   if ("selectors" in selector) {

@@ -6,7 +6,7 @@ import { child } from './child';
 import { classMatcher } from './class';
 import { descendant } from './descendant';
 import { field } from './field';
-import { exactNode, has } from './has';
+import { has } from './has';
 import { identifier } from './identifier';
 import { matches } from './matches';
 import { not } from './not';
@@ -42,5 +42,7 @@ export const MATCHERS: Matchers = {
   sibling,
   type,
   wildcard,
-  exactNode,
+  exactNode() {
+    throw new Error("unreachable");
+  }
 };
