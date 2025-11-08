@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { MultiSelector, tsquery, parse } from '../src/index';
-import { transform } from "../src/parse";
-import esquery from "esquery";
 
 describe('tsquery:', () => {
   describe('tsquery.parse - null query:', () => {

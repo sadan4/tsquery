@@ -6,7 +6,6 @@ import type {
   Selector,
   MultiSelector,
   BinarySelector,
-  Identifier
 } from './index';
 
 import * as esquery from 'esquery';

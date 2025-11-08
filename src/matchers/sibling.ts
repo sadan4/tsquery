@@ -16,7 +16,7 @@ export function sibling(
       findSibling(node, ancestors, siblingRight))
   );
 
-  function siblingLeft(prop: Array<Node>, index: number): boolean {
+  function siblingLeft(prop: readonly Node[], index: number): boolean {
     return prop
       .slice(0, index)
       .some((precedingSibling: Node) =>
@@ -24,7 +24,7 @@ export function sibling(
       );
   }
 
-  function siblingRight(prop: Array<Node>, index: number): boolean {
+  function siblingRight(prop: readonly Node[], index: number): boolean {
     return prop
       .slice(index, prop.length)
       .some((followingSibling: Node) =>
@@ -46,11 +46,11 @@ export function adjacent(
       findSibling(node, ancestors, adjacentRight))
   );
 
-  function adjacentLeft(prop: Array<Node>, index: number): boolean {
+  function adjacentLeft(prop: readonly Node[], index: number): boolean {
     return index > 0 && findMatches(prop[index - 1], selector.left, ancestors);
   }
 
-  function adjacentRight(prop: Array<Node>, index: number): boolean {
+  function adjacentRight(prop: readonly Node[], index: number): boolean {
     return (
       index < prop.length - 1 &&
       findMatches(prop[index + 1], selector.right, ancestors)
@@ -61,7 +61,7 @@ export function adjacent(
 function findSibling(
   node: Node,
   ancestors: Array<Node>,
-  test: (prop: Array<Node>, index: number) => boolean
+  test: (prop: readonly Node[], index: number) => boolean
 ): boolean {
   const [parent] = ancestors;
   if (!parent) {
