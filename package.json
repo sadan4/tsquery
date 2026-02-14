@@ -1,6 +1,6 @@
 {
   "name": "@sadan4/tsquery",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "description": "Query TypeScript ASTs with the esquery API!",
   "exports": {
     ".": {
