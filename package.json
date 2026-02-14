@@ -6,6 +6,10 @@
     ".": {
       "import": "./dist/esm/src/index.js",
       "require": "./dist/src/index.js"
+    },
+    "./*": {
+      "import": "./dist/esm/src/*.js",
+      "require": "./dist/src/*.js"
     }
   },
   "author": "sadan",
