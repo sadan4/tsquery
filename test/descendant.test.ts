@@ -16,5 +16,18 @@ describe('tsquery:', () => {
         (ast.statements[1] as IfStatement).elseStatement
       ]);
     });
+    it("should properly match nested descendants when passed a non-root node", () => {
+      const ast = tsquery.ast(`class Foo {
+  #a = 2;
+
+  static b(c) {
+    return ++c.#a;
+  }
+}`);
+      const [method] = tsquery(ast, "MethodDeclaration[name.text=b]");
+      const result = tsquery(method, "ClassDeclaration PrivateIdentifier");
+
+      expect(result).toEqual([]);
+    });
   });
 });

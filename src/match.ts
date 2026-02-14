@@ -21,7 +21,7 @@ export function match<T extends Node = Node>(
     if (findMatches(childNode, parsedSelector, ancestry)) {
       results.push(childNode as T);
     }
-  });
+  }, [], true);
 
   return results;
 }

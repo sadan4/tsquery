@@ -44,9 +44,10 @@ export function findMatches(
 export function traverse(
   node: Node,
   iterator: (node: Node, ancestors: Array<Node>) => void,
-  ancestors: Array<Node> = []
+  ancestors: Array<Node> = [],
+  isRoot = false,
 ): void {
-  if (node.parent != null) {
+  if (node.parent != null && !isRoot) {
     ancestors.unshift(node.parent);
   }
   iterator(node, ancestors);
